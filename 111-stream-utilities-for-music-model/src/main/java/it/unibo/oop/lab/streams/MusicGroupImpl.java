@@ -1,5 +1,8 @@
 package it.unibo.oop.lab.streams;
 
+import static java.util.stream.Collectors.toMap;
+
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -79,7 +82,14 @@ public final class MusicGroupImpl implements MusicGroup {
 
     @Override
     public Optional<String> longestAlbum() {
-        return this.songs.stream().filter(e -> e.getAlbumName().isPresent()).map(null);
+        return this.songs.stream()
+                .collect(toMap(e -> e.getAlbumName(), e -> e.getDuration(), Double::sum))
+                .entrySet()
+                .stream()
+                .filter(e -> e.getKey().isPresent())
+                .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
+                .findFirst()
+                .map(e -> e.getKey()).get();
     }
 
     private static final class Song {
