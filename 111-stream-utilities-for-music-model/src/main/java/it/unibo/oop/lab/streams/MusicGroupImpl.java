@@ -65,11 +65,10 @@ public final class MusicGroupImpl implements MusicGroup {
 
     @Override
     public OptionalDouble averageDurationOfSongs(final String albumName) {
-        return OptionalDouble.of(this.songs.stream()
+        return this.songs.stream()
                 .filter(e -> e.getAlbumName().equals(Optional.of(albumName)))
-                .map(e -> e.getDuration())
-                .reduce((a, b) -> (a + b) / 2)
-                .get());
+                .mapToDouble(e -> e.getDuration())
+                .reduce((a, b) -> (a + b) / 2);
     }
 
     @Override
@@ -83,13 +82,14 @@ public final class MusicGroupImpl implements MusicGroup {
     @Override
     public Optional<String> longestAlbum() {
         return this.songs.stream()
+                // Sums the durations of songs belonging to the same album
                 .collect(toMap(e -> e.getAlbumName(), e -> e.getDuration(), Double::sum))
                 .entrySet()
                 .stream()
-                .filter(e -> e.getKey().isPresent())
-                .sorted(Collections.reverseOrder(Map.Entry.comparingByValue()))
+                .filter(e -> e.getKey().isPresent()) // Removes songs with no album
+                .sorted(Collections.reverseOrder(Map.Entry.comparingByValue())) // Descending sort by duration
                 .findFirst()
-                .map(e -> e.getKey()).get();
+                .flatMap(e -> e.getKey()); // Avoids using map + get (which throws exception if there are no albums)
     }
 
     private static final class Song {
