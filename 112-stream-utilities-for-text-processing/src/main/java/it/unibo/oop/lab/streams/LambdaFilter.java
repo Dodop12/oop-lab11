@@ -27,7 +27,8 @@ import javax.swing.JTextArea;
  *
  * 4) List all the words in alphabetical order
  * 
- * 5) Write the count for each word, e.g. "word word pippo" should output "pippo -> 1 word -> 2"
+ * 5) Write the count for each word, e.g. "word word pippo" should output "pippo
+ * -> 1 word -> 2"
  *
  */
 public final class LambdaFilter extends JFrame {
@@ -38,7 +39,11 @@ public final class LambdaFilter extends JFrame {
         /**
          * Commands.
          */
-        IDENTITY("No modifications", Function.identity());
+        IDENTITY("No modifications", Function.identity()),
+        TO_LOWERCASE("Convert to lowercase", String::toLowerCase),
+        COUNT_CHARS("Get number of characters", s -> String.valueOf(s.length())),
+        COUNT_LINES("Get number of lines", s -> String.valueOf(s.lines().count())),
+        TO_ALPHABETICAL_ORDER("Get words ordered alphabetically", s -> s.lines().sorted().reduce());
 
         private final String commandName;
         private final Function<String, String> fun;
